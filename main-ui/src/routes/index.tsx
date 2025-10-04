@@ -73,21 +73,21 @@ const router = createBrowserRouter([
           { path: 'logout', action: logoutAction },
         ],
       },
-      // {
-      //   id: 'private',
-      //   // loader: requireAuthLoader,
-      //   children: [
-      //     // Dynamic feature routes loaded by FeatureHost
-      //     {
-      //       path: '*',
-      //       lazy: async () => {
-      //         const mod = await import('@/app/featureHost');
-      //         return { Component: mod.default };
-      //       }
-      //     },
-      //     { path: 'logout', action: logoutAction },
-      //   ],
-      // },
+      {
+        id: 'private',
+        // loader: requireAuthLoader,
+        children: [
+          // Dynamic feature routes loaded by FeatureHost
+          {
+            path: '*',
+            lazy: async () => {
+              const mod = await import('@/app/featureHost');
+              return { Component: mod.default };
+            }
+          },
+          { path: 'logout', action: logoutAction },
+        ],
+      },
     ],
   },
 ])

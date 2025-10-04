@@ -7,18 +7,6 @@ import { pluginRegistry } from '@/plugin-registry';
 import { store } from './store';
 import { sagaManager } from './sagaManager';
 
-const TestCompA = () => {
-  return <div>
-    <p>Comp A</p>
-    <Outlet />
-  </div>
-}
-
-const TestCompB = () => {
-  return <div>Test B</div>
-}
-
-
 export default function FeatureHost() {
   const [routes, setRoutes] = useState<RouteObject[] | null>(null);
 
@@ -57,6 +45,30 @@ export default function FeatureHost() {
   };
 
   /**
+   * Runs plugin initialization functions after reducers are loaded
+   */
+  const runPluginInitializers = async (plugin: any) => {
+    if (!plugin.getInitializers) return;
+
+    try {
+      const initializers = await plugin.getInitializers();
+      console.log(`🚀 Running ${initializers.length} initializers for ${plugin.featureKey}`);
+      
+      // Run all initializers
+      initializers.forEach((initializer: () => void, index: number) => {
+        try {
+          initializer();
+          console.log(`✅ Initializer ${index + 1} completed for ${plugin.featureKey}`);
+        } catch (error) {
+          console.error(`❌ Initializer ${index + 1} failed for ${plugin.featureKey}:`, error);
+        }
+      });
+    } catch (error) {
+      console.error(`❌ Failed to run initializers for ${plugin.featureKey}:`, error);
+    }
+  };
+
+  /**
    * Loads and initializes a single plugin
    */
   const loadPlugin = async (pluginKey: string): Promise<RouteObject[]> => {
@@ -73,6 +85,9 @@ export default function FeatureHost() {
       // Register plugin state and side effects
       await registerPluginReducers(plugin);
       await startPluginSagas(plugin);
+      
+      // Run plugin initializers after reducers and sagas are set up
+      await runPluginInitializers(plugin);
 
       // Get plugin routes
       const routes = await plugin.getRoutes(`/${plugin.featureKey}`);

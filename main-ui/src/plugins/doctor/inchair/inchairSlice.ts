@@ -59,6 +59,16 @@ const slice = createSlice({
       state.timer.startTime = Date.now();
       state.timer.isRunning = true;
     },
+    setProcedureSteps(state, action: PayloadAction<ProcedureStep[]>) {
+      state.steps = action.payload;
+    },
+    addProcedureStep(state, action: PayloadAction<Omit<ProcedureStep, 'id'>>) {
+      const newStep: ProcedureStep = {
+        ...action.payload,
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+      };
+      state.steps.push(newStep);
+    },
   },
 });
 
@@ -68,6 +78,8 @@ export const {
   addNote,
   pauseTimer,
   resumeTimer,
+  setProcedureSteps,
+  addProcedureStep,
 } = slice.actions;
 
 export default slice.reducer;

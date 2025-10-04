@@ -7,6 +7,7 @@ export type PluginModule = {
   getRoutes: (basePath: string) => Promise<RouteObject[]>; // created with lazy() inside
   getReducers?: () => Promise<Record<string, Reducer>>;
   getSagas?: () => Promise<(() => Generator)[]>;
+  getInitializers?: () => Promise<(() => void)[]>; // Functions to initialize plugin state
 };
 
 // IMPORTANT: each value is a dynamic import -> separate chunk per feature
